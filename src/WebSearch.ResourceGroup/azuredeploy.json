@@ -1,0 +1,175 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "storageAccountNameType": {
+      "type": "string",
+      "defaultValue": "Standard_LRS",
+      "allowedValues": [
+        "Standard_LRS",
+        "Standard_ZRS",
+        "Standard_GRS",
+        "Standard_RAGRS",
+        "Premium_LRS"
+      ]
+    },
+    "storageAccountName": {
+      "type": "string"
+    },
+    "azureSearchName": {
+      "type": "string"
+    },
+    "azureSearchSku": {
+      "type": "string",
+      "allowedValues": [
+        "free",
+        "standard"
+      ]
+    },
+    "computerVisionName": {
+      "type": "string"
+    },
+    "computerVisionSku": {
+      "type": "string",
+      "allowedValues": [
+        "free",
+        "S1"
+      ]
+    },
+    "appServiceName": {
+      "type": "string"
+    },
+    "appServicePlanName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "appServicePlanSkuName": {
+      "type": "string",
+      "defaultValue": "F1",
+      "allowedValues": [
+        "F1",
+        "D1",
+        "B1",
+        "B2",
+        "B3",
+        "S1",
+        "S2",
+        "S3",
+        "P1",
+        "P2",
+        "P3",
+        "P4"
+      ],
+      "metadata": {
+        "description": "Describes plan's pricing tier and capacity. Check details at https://azure.microsoft.com/en-us/pricing/details/app-service/"
+      }
+    }
+  },
+  "variables": {
+    "storageAccountResourceId": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
+    "azureSearchResourceId": "[resourceId('Microsoft.Search/searchServices', parameters('azureSearchName'))]",
+    "computerVisionResourceId": "[resourceId('Microsoft.CognitiveServices/accounts', parameters('computerVisionName'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.CognitiveServices/accounts",
+      "sku": {
+        "name": "[parameters('computerVisionSku')]"
+      },
+      "kind": "ComputerVision",
+      "name": "[parameters('computerVisionName')]",
+      "apiVersion": "2016-02-01-preview",
+      "location": "[resourceGroup().location]",
+      "properties": {},
+      "dependsOn": []
+    },
+    {
+      "name": "[parameters('azureSearchName')]",
+      "type": "Microsoft.Search/searchServices",
+      "apiVersion": "2015-08-19",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "replicaCount": 1,
+        "partitionCount": 1,
+        "hostingMode": "default"
+      },
+      "sku": {
+        "name": "[parameters('azureSearchSku')]"
+      }
+    },
+    {
+      "name": "[parameters('storageAccountName')]",
+      "type": "Microsoft.Storage/storageAccounts",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2016-01-01",
+      "sku": {
+        "name": "[parameters('storageAccountNameType')]"
+      },
+      "dependsOn": [],
+      "tags": {
+        "displayName": "storageAccountName"
+      },
+      "kind": "Storage"
+    },
+    {
+      "name": "[parameters('appServicePlanName')]",
+      "type": "Microsoft.Web/serverfarms",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2015-08-01",
+      "sku": {
+        "name": "[parameters('appServicePlanSkuName')]"
+      },
+      "dependsOn": [],
+      "tags": {
+        "displayName": "appServicePlan"
+      },
+      "properties": {
+        "name": "[parameters('appServicePlanName')]",
+        "numberOfWorkers": 1
+      }
+    },
+    {
+      "name": "[parameters('appServiceName')]",
+      "type": "Microsoft.Web/sites",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2015-08-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"
+      ],
+      "tags": {
+        "[concat('hidden-related:', resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName')))]": "Resource",
+        "displayName": "appService"
+      },
+      "properties": {
+        "name": "[parameters('appServiceName')]",
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"
+      }
+    }
+  ],
+  "outputs": {
+    "storageAccountName": {
+      "type": "string",
+      "value": "[parameters('storageAccountName')]"
+    },
+    "storageAccountKey": {
+      "type": "string",
+      "value": "[listKeys(variables('storageAccountResourceId'), '2016-01-01').keys[0].value]"
+    },
+    "azureSearchName": {
+      "type": "string",
+      "value": "[parameters('azureSearchName')]"
+    },
+    "azureSearchKey": {
+      "type": "string",
+      "value": "[listAdminKeys(variables('azureSearchResourceId'), '2015-08-19').PrimaryKey]"
+    },
+    "computerVisionName": {
+      "type": "string",
+      "value": "[parameters('computerVisionName')]"
+    },
+    "computerVisionKey": {
+      "type": "string",
+      "value": "[listKeys(variables('computerVisionResourceId'), '2016-02-01-preview').key1]"
+    }
+  }
+}

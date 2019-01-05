@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Category Management</title>
+
+    <!-- Bootstrap -->
+    <link href="http://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- ko-vs-editor viewModel: AZ.Categories.model -->
+
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.html">Doc Cat</a>
+            <ul class="nav navbar-nav">
+                <li><a href="index.html">Search</a></li>
+                <li class="active"><a href="Categories.html">Category Management</a></li>
+                <li><a href="Documents.html">Document Management</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <h1>Categories <button type="button" class="btn" onclick="AZ.Categories.addEdit()"><span class='glyphicon glyphicon-plus'></span> Add</button></h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Term</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: categories">
+                <tr>
+                    <td data-bind="text: CategoryName"></td>
+                    <td data-bind="text: SearchTerm"></td>
+                    <td>
+                        <button type="button" class="btn" data-bind="click: AZ.Categories.delCat"><span class='glyphicon glyphicon-trash'></span> Delete</button>
+                        <button type="button" class="btn" data-bind="click: AZ.Categories.addEdit"><span class='glyphicon glyphicon-pencil'></span> Edit</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Modal -->
+        <div class="modal fade" id="addEditCatModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Add/Edit Category</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Category</label>
+                            <input type="text" class="form-control" data-bind="value: catNameInput" autocomplete="off" />
+                        </div>
+                        <div class="form-group">
+                            <label>Search Term</label>
+                            <input type="text" class="form-control" data-bind="value: catTermInput" autocomplete="off"/>
+                        </div>
+                        <div style="color: gray; font-size: smaller;">
+                            Lucene Search terms can include the following operators:
+                            <ul>
+                                <li>'+' specifies AND operation: token1+token2</li>
+                                <li>'|' specifies OR operation: token1|token2</li>
+                                <li>'-' negates a single token: -token0</li>
+                                <li>'"' creates phrases of terms: "term1 term2 ..."</li>
+                                <li>'*' in a term specifies wildcard for multiple characters: te*m</li>
+                                <li>'?' in a term specifies wildcard for single character: ter?m</li>
+                                <li>'~N' at the end of terms specifies <a href="https://en.wikipedia.org/wiki/Levenshtein_distance" target="_blank">fuzzy</a> query: term~1</li>
+                                <li>'~N' at the end of phrases specifies near query: "term1 term2"~5</li>
+                                <li>'^N' at the end of phrases boosts the term for the query: "term1^2 term2"</li>
+                                <li>'/[expression]/' enables <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-regexp-query.html#regexp-syntax" target="_blank">regular expressions</a>: "/[mh]otel]"</li>
+                                <li>'(' and ')' specifies precedence: token1 + (token2 | token3)</li>
+                            </ul>
+                            More information on search syntax can be found <a href="https://msdn.microsoft.com/library/azure/mt589323.aspx" target="_blank">here</a>.
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="AZ.Categories.saveCat()">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.9.1.min.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.4.0.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/categories.js"></script>
+</body>
+</html>

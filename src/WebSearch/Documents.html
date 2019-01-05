@@ -1,0 +1,155 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Document Management</title>
+
+    <!-- Bootstrap -->
+    <link href="http://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- ko-vs-editor viewModel: AZ.Documents.model -->
+
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.html">Doc Cat</a>
+            <ul class="nav navbar-nav">
+                <li><a href="index.html">Search</a></li>
+                <li><a href="Categories.html">Category Management</a></li>
+                <li class="active"><a href="Documents.html">Document Management</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <h1>Documents <button type="button" class="btn" onclick="AZ.Documents.addEdit()"><span class='glyphicon glyphicon-plus'></span> Add</button></h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>File Name</th>
+                    <th>Categories</th>
+                    <th>Insert Date (UTC)</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody data-bind="foreach: documents">
+                <tr>
+                    <td>
+                        <a data-bind="attr: {href: FileUrl}" target="_blank"><span data-bind="text: FileName"></span></a>
+                    </td>
+                    <td>
+                        <div data-bind="foreach: Categories"><span data-bind="text: ($index() !== 0) ? ', ' : ''"></span><span data-bind="text: $data"></span></div>
+                    </td>
+                    <td data-bind="text: LastUpdate"></td>
+                    <td>
+                        <button type="button" class="btn" data-bind="click: AZ.Documents.delDoc"><span class='glyphicon glyphicon-trash'></span> Delete</button>
+                        <button type="button" class="btn" data-bind="click: AZ.Documents.catDoc"><span class='glyphicon glyphicon-refresh'></span> Recategorize</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <button type="button" class="btn" onclick="AZ.Documents.resetIndexes()"><span class='glyphicon glyphicon-exclamation-sign'></span> Delete All Documents and Rebuild Index</button>
+
+        <!-- Modals -->
+        <div class="modal fade" id="addEditDocModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Add New Document - Step 1</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <h3>Document Upload</h3>
+                            <div class="input-group">
+                                <input class='form-control' type="text" autocomplete="off" readonly id="upload-file-info" onclick="$('#fileUpload').click();" />
+                                <span class="input-group-btn">
+                                    <label for="fileUpload" class="btn btn-default">
+                                        <input id="fileUpload" type="file" style="display:none;" autocomplete="off" onchange="$('#upload-file-info').val($(this).val());">
+                                        Browse
+                                    </label>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="AZ.Documents.uploadDoc()">Parse <span class="glyphicon glyphicon-arrow-right"></span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="addEditDoc2Modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Add New Document - Step 2</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Document Contents</label>
+                            <textarea data-bind="value: docParsedText" readonly rows="20" class="form-control"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-default" onclick="AZ.Documents.addEdit()"><span class="glyphicon glyphicon-arrow-left"></span> Back</button>
+                        <button type="button" class="btn btn-primary" onclick="AZ.Documents.saveDoc()">Upload and Categorize <span class="glyphicon glyphicon-arrow-right"></span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="addEditDoc3Modal" tabindex="-1" role="dialog" style="overflow-y:auto;">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" onclick="location.reload();"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Add New Document - Step 3</h4>
+                    </div>
+                    <div class="modal-body">
+                        <h3>Categorization Results (threshold >= 0.10):</h3>
+                            <div data-bind="visible: searchResults().length == 0">No categories found.</div>
+                            <div data-bind="foreach: searchResults">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" data-bind="style: {'background-color': (Categories[2] === 'false') ? '#FFFFC2' : '#89C35C' }">
+                                        <div class="panel-title">
+                                            <b>Category:</b> <span class="small" data-bind="text: Categories[0]"></span> <b>Search Term:</b> <span class="small" data-bind="text: Categories[1]"></span>
+                                            <div style="float: right;">
+                                                <b>Score:</b> <span data-bind="text: Score"></span><br/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel-body" data-bind="style: {'background-color': (Categories[2] === 'false') ? '#FFFFD6' : '#D9FFAC' }">
+                                        <div data-bind="foreach: Highlights">
+                                            <div style="margin-top: 10px;" data-bind="html: $data"></div>
+                                            <hr/>
+                                        </div>
+                                        <div style="text-align: center">
+                                            <button class="btn btn-success" data-bind="visible: Categories[2] === 'false', click: AZ.Documents.addCat">Accept Categorization</button>
+                                            <button class="btn btn-danger" data-bind="visible: Categories[2] === 'true', click: AZ.Documents.removeCat">Reject Categorization</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn" onclick="location.reload();">Done</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.9.1.min.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.4.0.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/documents.js"></script>
+</body>
+</html>

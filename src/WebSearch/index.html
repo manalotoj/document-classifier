@@ -1,0 +1,88 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Document Search</title>
+
+    <!-- Bootstrap -->
+    <link href="http://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- ko-vs-editor viewModel: AZ.Search.model -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">Doc Cat</a>
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="index.html">Search</a></li>
+                <li><a href="Categories.html">Category Management</a></li>
+                <li><a href="Documents.html">Document Management</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="text-center" style="margin-top: 10vh;">
+        <h1>Document Search</h1>
+        <p>
+                <div class="col-md-8 col-md-offset-2">
+                    <div class="input-group">
+                        <input type="text" class="form-control" data-bind="value: searchText" autocomplete="off" id="searchTerm" placeholder="Enter Search Term" />
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button" onclick="AZ.Search.doSearch();">Search</button>
+                        </span>
+                    </div>
+                    <div style="text-align: left; margin-top: 20px;">
+                        <div style="color: gray; font-size: smaller;" data-bind="visible: !isSearchResult()">
+                            Lucene Search terms can include the following operators:
+                            <ul>
+                                <li>'+' specifies AND operation: token1+token2</li>
+                                <li>'|' specifies OR operation: token1|token2</li>
+                                <li>'-' negates a single token: -token0</li>
+                                <li>'"' creates phrases of terms: "term1 term2 ..."</li>
+                                <li>'*' in a term specifies wildcard for multiple characters: te*m</li>
+                                <li>'?' in a term specifies wildcard for single character: ter?m</li>
+                                <li>'~N' at the end of terms specifies <a href="https://en.wikipedia.org/wiki/Levenshtein_distance" target="_blank">fuzzy</a> query: term~1</li>
+                                <li>'~N' at the end of phrases specifies near query: "term1 term2"~5</li>
+                                <li>'^N' at the end of phrases boosts the term for the query: "term1^2 term2"</li>
+                                <li>'/[expression]/' enables <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-regexp-query.html#regexp-syntax" target="_blank">regular expressions</a>: "/[mh]otel]"</li>
+                                <li>'(' and ')' specifies precedence: token1 + (token2 | token3)</li>
+                            </ul>
+                            More information on search syntax can be found <a href="https://msdn.microsoft.com/library/azure/mt589323.aspx" target="_blank">here</a>.
+                        </div>
+                        <div data-bind="visible: isSearchResult()" style="display: none;">
+                            <h3>Results for <em><span data-bind="text: searchText"></span></em>:</h3>
+                            <div data-bind="visible: searchResults().length == 0">No results found.</div>
+                            <div data-bind="foreach: searchResults">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <div class="panel-title">
+                                            <a data-bind="attr: {href: FileUrl}" target="_blank"><span data-bind="text: FileName"></span></a><br/>
+                                            <span style="font-size: smaller;">(Last Update: <span data-bind="text: LastUpdate"></span> UTC)</span>
+                                            <button class="btn btn-sm btn-info" title="Search for documents based on the words found in this document" data-bind="click: AZ.Search.moreLikeThis">More Like This</button>
+                                            <div style="float: right;">Score: <span data-bind="text: Score"></span><br/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div data-bind="foreach: Highlights">
+                                            <div style="margin-top: 10px;" data-bind="html: $data"></div>
+                                            <hr/>
+                                        </div>
+                                        <b>Categories:</b>
+                                        <div data-bind="foreach: Categories" style="display: inline;"><span data-bind="text: ($index() !== 0) ? ', ' : ''"></span><span data-bind="text: $data"></span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+    </div>
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.9.1.min.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.4.0.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/search.js"></script>
+</body>
+</html>
