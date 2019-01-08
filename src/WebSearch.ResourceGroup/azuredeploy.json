@@ -16,6 +16,9 @@
     "storageAccountName": {
       "type": "string"
     },
+    "storageAccountContainerName": {
+      "type": "string"
+    },
     "azureSearchName": {
       "type": "string"
     },
@@ -109,7 +112,20 @@
       "tags": {
         "displayName": "storageAccountName"
       },
-      "kind": "Storage"
+      "kind": "Storage",
+      "resources": [
+        {
+          "type": "blobServices/containers",
+          "apiVersion": "2018-03-01-preview",
+          "name": "[concat('default/', parameters('storageAccountContainerName'))]",
+          "dependsOn": [
+            "[parameters('StorageAccountName')]"
+          ],
+          "properties": {
+            "publicAccess": "Container"
+          }
+        }
+      ]
     },
     {
       "name": "[parameters('appServicePlanName')]",

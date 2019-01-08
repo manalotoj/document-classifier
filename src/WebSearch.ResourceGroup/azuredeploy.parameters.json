@@ -3,25 +3,28 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "storageAccountName": {
-      "value": "azuresearchjqmstore2018"
+      "value": "storageaccountname"
+    },
+    "storageAccountContainerName": {
+      "value":  "azure-search"
     },
     "azureSearchName": {
-      "value": "azuresearchjqm2018"
+      "value": "azuresearchname"
     },
     "azureSearchSku": {
       "value": "standard"
     },
     "computerVisionName": {
-      "value": "computervisionjqm2018"
+      "value": "computervisionname"
     },
     "computerVisionSku": {
       "value": "S1"
     },
     "appServiceName": {
-      "value": "azureSearchWebAppjqm2018"
+      "value": "websitename"
     },
     "appServicePlanName": {
-      "value": "azureSearchAspjqm2018"
+      "value": "appserviceplanname"
     }
   }
 }
