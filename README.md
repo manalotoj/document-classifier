@@ -16,8 +16,17 @@ This repo has been cloned and minimally modified from https://scottse.visualstud
 1. From Azure DevOps, navigate to Pipelines > Releases> + New > import release pipeline. Browse your local system and select azure-search_CD.json file, and click import.
 2. Edit the pipeline name.
 3. Click +Add an artifact and specify the artifacts of the previously defined CI Pipeline. In the Default version, select latest from the drop-down list, click add button.
-4. Click DEV within the Stages block. Specify "Hosted" for agent pool. Within Azure Deployment:Create or Update Resource task, specify Azure subscription. Within Azure App Service Deploy task, specify the same azure subscription.
-5. In the Variables tab, modify the following values: armAppServiceName (must be globally unique), armAppServicePlanName, armAzureSearchName (must be globally unique), armStorageAccountName (must be globally unique, all lower-case characters, no special charaters), resourceGroupName.
+4. Click DEV within the Stages block. 
+- Specify "Hosted" for agent pool.
+- Within Azure Deployment:Create or Update Resource task, specify Azure subscription. 
+- Within Azure App Service Deploy task, specify the same azure subscription.
+5. In the Variables tab, modify the following values: 
+- armAppServiceName (must be globally unique)
+- armAppServicePlanName
+- armAzureSearchName (must be globally unique)
+-armStorageAccountName (must be globally unique
+- all lower-case characters, no special charaters)
+- resourceGroupName
 6. Save the pipeline.
 
 
