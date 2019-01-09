@@ -153,10 +153,10 @@ namespace AzureSearchDocumentClassiferLib
 
         private static CloudStorageAccount GetConnection()
         {
-            var storageConnectionString = ConfigurationManager.ConnectionStrings["AzureStorage"];
+            var storageConnectionString = ConfigurationManager.AppSettings["AzureStorageConnString"];
 
             // Retrieve storage account from connection string.
-            return CloudStorageAccount.Parse(storageConnectionString.ConnectionString);
+            return CloudStorageAccount.Parse(storageConnectionString);
         }
     }
 }
