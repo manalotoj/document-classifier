@@ -5,7 +5,9 @@
    "isDeleted": false,
   "variables": {
     "categorizationScoreThreshold": { "value": "0.1" },
-    "categoryTableName": { "value": "CategoryTableName" }
+    "categoryTableName": { "value": "CategoryTableName" },
+    "resourceGroupName": { "value": "azuresearch-temp-rg" },
+    "resourceGroupLocation": { "value": "westus" }
   },
   "variableGroups": [],
   "environments": [
@@ -119,7 +121,7 @@
               "environment": {},
               "taskId": "94a74903-f93f-4075-884f-dc11f34058b4",
               "version": "2.*",
-              "name": "Azure Deployment:Create Or Update Resource Group action on azuresearch-temp-rg",
+              "name": "Azure Deployment:Create Or Update Resource Group action on $(resourceGroupName)",
               "refName": "",
               "enabled": true,
               "alwaysRun": false,
@@ -130,8 +132,8 @@
               "condition": "succeeded()",
               "inputs": {
                 "action": "Create Or Update Resource Group",
-                "resourceGroupName": "azuresearch-temp-rg",
-                "location": "West US",
+                "resourceGroupName": "$(resourceGroupName)",
+                "location": "$(resourceGroupLocation)",
                 "templateLocation": "Linked artifact",
                 "csmFileLink": "",
                 "csmParametersFileLink": "",
