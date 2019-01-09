@@ -4,6 +4,23 @@ This repo has been cloned and minimally modified from https://scottse.visualstud
 3. Addition of Resource Group project containing ARM template
 4. dev.azure.com CICD pipelines
 
+# Deployment
+## CI Pipeline
+1. From Azure DevOps, navigate to Pipelines > Builds> + New > import build pipeline. Browse your local system and select azure-search_CI.json file, and click import.
+2. Edit the pipeline name.
+3. Within Pipeline, spcify "Hosted" agent pool.
+4. Click "Get sources" and specify repository. Optionally, choose Tag sources on success.
+5. Save and queue a build.
+
+## CD Pipeline
+1. From Azure DevOps, navigate to Pipelines > Releases> + New > import release pipeline. Browse your local system and select azure-search_CD.json file, and click import.
+2. Edit the pipeline name.
+3. Click +Add an artifact and specify the artifacts of the previously defined CI Pipeline. In the Default version, select latest from the drop-down list, click add button.
+4. Click DEV within the Stages block. Specify "Hosted" for agent pool. Within Azure Deployment:Create or Update Resource task, specify Azure subscription. Within Azure App Service Deploy task, specify the same azure subscription.
+5. In the Variables tab, modify the following values: armAppServiceName (must be globally unique), armAppServicePlanName, armAzureSearchName (must be globally unique), armStorageAccountName (must be globally unique, all lower-case characters, no special charaters), resourceGroupName.
+6. Save the pipeline.
+
+
 # AzureSearchDocumentClassifier
 Use Azure Search and the Cognitive Vision API to categorize and search across uploaded PDF documents including scanned images. 
 
