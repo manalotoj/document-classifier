@@ -1,4 +1,4 @@
-﻿using iTextSharp.text.pdf;
+using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.parser;
 using System;
 using System.Collections.Generic;
@@ -34,7 +34,7 @@ namespace AzureSearchDocumentClassiferLib
                             {
                                 Debug.WriteLine("No text found in file " + name);
                             }
-                            pdfText += text;                            
+                            pdfText += text;
                         }
                         else
                         {
@@ -103,53 +103,93 @@ namespace AzureSearchDocumentClassiferLib
             public void RenderImage(ImageRenderInfo renderInfo)
             {
                 PdfImageObject image = renderInfo.GetImage();
-                PdfArray filter2 = (PdfArray)image.Get(PdfName.FILTER);
 
-                if (filter2 != null)
+                var x = image.Get(PdfName.FILTER);
+
+                PdfName filter = null;
+                if (x is PdfName)
                 {
-                    try
+                    filter = (PdfName)x;
+                    var drawingImage = GetImage(filter, image);
+                    if (drawingImage != null)
                     {
-                        PdfName filter = (PdfName)filter2[0];
-                        System.Drawing.Image drawingImage = image.GetDrawingImage();
-
-                        string extension = ".";
-
-                        if (Equals(filter, PdfName.DCTDECODE))
-                        {
-                            extension += PdfImageObject.ImageBytesType.JPG.FileExtension;
-                        }
-                        else if (Equals(filter, PdfName.JPXDECODE))
-                        {
-                            extension += PdfImageObject.ImageBytesType.JP2.FileExtension;
-                        }
-                        else if (Equals(filter, PdfName.FLATEDECODE))
-                        {
-                            extension += PdfImageObject.ImageBytesType.PNG.FileExtension;
-                        }
-                        else if (Equals(filter, PdfName.LZWDECODE))
-                        {
-                            extension += PdfImageObject.ImageBytesType.CCITT.FileExtension;
-                        }
-                        else if (Equals(filter, PdfName.CCITTFAXDECODE))
-                        {
-                            extension += PdfImageObject.ImageBytesType.CCITT.FileExtension;
-                        }
-                        else
-                        {
-                            Debug.WriteLine("Unknown type: " + filter);
-                        }
-
-                        Images.Add(drawingImage, extension);
-                    }
-                    catch (ArgumentException)
-                    {
-                        // unknow image type
-                        Debug.WriteLine("Unknown image type.");
+                        Images.Add(drawingImage.Item2, drawingImage.Item1);
                     }
                 }
+
+                if (x is PdfArray)
+                {
+                    var pdfArray = (PdfArray)x;
+                    foreach (PdfName pdfName in pdfArray)
+                    {
+                        var drawingImage = GetImage(pdfName, image);
+                        Images.Add(drawingImage.Item2, drawingImage.Item1);
+                    }
+                }
+
+                //try
+                //{
+                //    var drawingImage = GetImage(filter, image);            
+
+                //    Images.Add(drawingImage.Item2, drawingImage.Item1);
+                //}
+                //catch (ArgumentException)
+                //{
+                //    // unknow image type
+                //    Debug.WriteLine("Unknown image type.");
+                //}
             }
 
             public void RenderText(TextRenderInfo renderInfo) { }
+        }
+
+        private static Tuple<string, System.Drawing.Image> GetImage(PdfName filter, PdfImageObject pdfImageObject)
+        {
+            Tuple<string, System.Drawing.Image> image = null;
+            try
+            {
+                System.Drawing.Image drawingImage = pdfImageObject.GetDrawingImage();
+
+                string extension = ".";
+
+                if (Equals(filter, PdfName.DCTDECODE))
+                {
+                    extension += PdfImageObject.ImageBytesType.JPG.FileExtension;
+                }
+                else if (Equals(filter, PdfName.JBIG2DECODE))
+                {
+                    extension += PdfImageObject.ImageBytesType.JBIG2.FileExtension;
+                }
+                else if (Equals(filter, PdfName.JPXDECODE))
+                {
+                    extension += PdfImageObject.ImageBytesType.JP2.FileExtension;
+                }
+                else if (Equals(filter, PdfName.FLATEDECODE))
+                {
+                    extension += PdfImageObject.ImageBytesType.PNG.FileExtension;
+                }
+                else if (Equals(filter, PdfName.LZWDECODE))
+                {
+                    extension += PdfImageObject.ImageBytesType.CCITT.FileExtension;
+                }
+                else if (Equals(filter, PdfName.CCITTFAXDECODE))
+                {
+                    extension += PdfImageObject.ImageBytesType.CCITT.FileExtension;
+                }
+                else
+                {
+                    Debug.WriteLine("Unknown type: " + filter);
+                }
+
+                image = new Tuple<string, System.Drawing.Image>(extension, drawingImage);
+            }
+            catch (Exception exc)
+            {
+                // unknow image type
+                Debug.WriteLine("Unknown image type.");
+                Debug.WriteLine(exc.ToString());
+            }
+            return image;
         }
 
         public static byte[] ReadFully(Stream input)
