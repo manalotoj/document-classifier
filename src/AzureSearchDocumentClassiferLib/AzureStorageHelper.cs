@@ -91,7 +91,7 @@ namespace AzureSearchDocumentClassiferLib
             catch (Exception ex)
             {
                 if (!ex.Message.Contains("Conflict"))
-                {
+                {                 
                     throw new Exception("Error adding category: " + ex.Message);
                 }
             }

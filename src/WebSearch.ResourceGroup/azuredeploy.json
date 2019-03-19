@@ -104,7 +104,7 @@
       "name": "[parameters('storageAccountName')]",
       "type": "Microsoft.Storage/storageAccounts",
       "location": "[resourceGroup().location]",
-      "apiVersion": "2016-01-01",
+      "apiVersion": "2018-07-01",
       "sku": {
         "name": "[parameters('storageAccountNameType')]"
       },
@@ -112,11 +112,11 @@
       "tags": {
         "displayName": "storageAccountName"
       },
-      "kind": "Storage",
+      "kind": "StorageV2",
       "resources": [
         {
           "type": "blobServices/containers",
-          "apiVersion": "2018-03-01-preview",
+          "apiVersion": "2018-07-01",
           "name": "[concat('default/', parameters('storageAccountContainerName'))]",
           "dependsOn": [
             "[parameters('StorageAccountName')]"

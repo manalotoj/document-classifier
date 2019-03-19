@@ -223,11 +223,13 @@ namespace AzureSearchDocumentClassiferLib
                 // the batch. Depending on your application, you can take compensating actions like delaying and
                 // retrying. For this simple demo, we just log the failed document keys and continue.
                 Debug.WriteLine("Failed to index the document: " + e.Message);
+                Trace.TraceError(e.ToString());
                 return false;
             }
             catch (Microsoft.Rest.Azure.CloudException ex)
             {
                 // Could be that the index has not been created!!
+                Trace.TraceError(ex.ToString());
                 return false;
             }
 
@@ -402,6 +404,7 @@ namespace AzureSearchDocumentClassiferLib
                 catch (Exception ex)
                 {
                     Console.WriteLine("Error with MoreLikeThis request: " + ex.Message);
+                    Trace.TraceError(ex.ToString());
                     throw;
                 }
             }
