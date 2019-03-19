@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Web;
 using System.Web.Http;
 using AzureSearchDocumentClassiferLib;
@@ -27,7 +29,16 @@ namespace WebSearch.Controllers
             if (httpPostedFile != null)
             {
                 // check for existing file?
-                return PdfHelper.GetTextFromPdfBytes(PdfHelper.ReadFully(httpPostedFile.InputStream));
+                Trace.TraceInformation("File posted to controller: " + httpPostedFile.FileName);
+                try
+                {
+                    return PdfHelper.GetTextFromPdfBytes(PdfHelper.ReadFully(httpPostedFile.InputStream));
+                }
+                catch (Exception exc)
+                {
+                    Trace.TraceError("Failed to convert file to text using PdfHelper.");
+                    Trace.TraceError(exc.ToString());
+                }
             }
             return string.Empty;
         }
