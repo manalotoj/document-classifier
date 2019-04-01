@@ -5,6 +5,7 @@ using System.Text;
 using Newtonsoft.Json;
 using System.Configuration;
 using System.Web;
+using System.Diagnostics;
 
 namespace AzureSearchDocumentClassiferLib
 {
@@ -16,7 +17,20 @@ namespace AzureSearchDocumentClassiferLib
             var queryString = HttpUtility.ParseQueryString(string.Empty);
             queryString["language"] = "unk";
             queryString["detectOrientation "] = "true";
-            var url = "https://westus.api.cognitive.microsoft.com/vision/v1.0/ocr?" + queryString;
+
+            var region = ConfigurationManager.AppSettings["ComputerVisionRegion"];
+            if (!string.IsNullOrEmpty(region))
+            {
+                region = region.Replace('-', ' ').Trim().ToLower();
+            }
+            else
+            {
+                throw new ArgumentException($"Invalid appSetting.ComputerVisionRegion value of '{region}' detected.");
+            }
+
+            var url = $"https://{region}.api.cognitive.microsoft.com/vision/v1.0/ocr?{queryString}";
+            Trace.WriteLine($"Cognitive Services Url: {url}");
+
             var request = WebRequest.Create(url) as HttpWebRequest;
 
             if (request != null)

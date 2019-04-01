@@ -32,6 +32,9 @@
     "computerVisionName": {
       "type": "string"
     },
+    "computerVisionRegion": {
+      "type": "string"
+    },
     "computerVisionSku": {
       "type": "string",
       "allowedValues": [
@@ -82,7 +85,7 @@
       "kind": "ComputerVision",
       "name": "[parameters('computerVisionName')]",
       "apiVersion": "2016-02-01-preview",
-      "location": "[resourceGroup().location]",
+      "location": "[parameters('computerVisionRegion')]",
       "properties": {},
       "dependsOn": []
     },
