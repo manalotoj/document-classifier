@@ -6,7 +6,7 @@
       "value": "azuresearchjqmstore2018"
     },
     "storageAccountContainerName": {
-      "value":  "azure-search"
+      "value": "azure-search"
     },
     "azureSearchName": {
       "value": "azuresearchjqm2018"
@@ -16,6 +16,9 @@
     },
     "computerVisionName": {
       "value": "computervisionjqm2018"
+    },
+    "computerVisionRegion": {
+      "value":  "westus"
     },
     "computerVisionSku": {
       "value": "S1"
