@@ -3,31 +3,31 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "storageAccountName": {
-      "value": "azuresearchjqmstore2018"
+      "value": "[STORAGE_ACCOUNT_NAME]"
     },
     "storageAccountContainerName": {
-      "value": "azure-search"
+      "value": "STORAGE_ACCOUNT_CONTAINER_NAME"
     },
     "azureSearchName": {
-      "value": "azuresearchjqm2018"
+      "value": "AZURE_SEARCH_NAME"
     },
     "azureSearchSku": {
-      "value": "standard"
+      "value": "AZURE_SEARCH_SKU"
     },
     "computerVisionName": {
-      "value": "computervisionjqm2018"
+      "value": "COGNITIVE_SERVICE_NAME"
     },
     "computerVisionRegion": {
-      "value":  "westus"
+      "value":  "COGNITIVE_SERVICE_REGION"
     },
     "computerVisionSku": {
-      "value": "S1"
+      "value": "COGNITIVE_SERVICE_SKU"
     },
     "appServiceName": {
-      "value": "azureSearchWebAppjqm2018"
+      "value": "APP_SERVICE_NAME"
     },
     "appServicePlanName": {
-      "value": "azureSearchAspjqm2018"
+      "value": "APP_SERVICE_PLAN_NAME"
     }
   }
 }
